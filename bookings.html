@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bookings - Admin - Rent-a-Car</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body class="admin-bookings-page">
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container">
+        <a class="navbar-brand" href="../../index.html">
+          <i class="bi bi-car-front-fill me-2"></i>
+          Rent-a-Car Admin
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="admin-dashboard.html">Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="manage-users.html">Manage Users</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="manage-cars.html">Manage Cars</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="bookings.html">Bookings</a>
+            </li>
+          </ul>
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <button type="button" class="btn btn-primary btn-sm logout-btn">
+                Logout
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <header class="bk-header">
+      <div class="bk-header-inner container">
+        <div class="bk-header-icon" aria-hidden="true">
+          <i class="bi bi-calendar-check-fill"></i>
+        </div>
+        <h1 class="bk-header-title">Bookings</h1>
+        <p class="bk-header-desc">
+          Manage and approve booking requests from customers
+        </p>
+      </div>
+    </header>
+
+    <main class="bk-main container">
+      <section class="bk-stats" aria-label="Booking summary">
+        <div class="row g-3">
+          <div class="col-6 col-md-3">
+            <div class="bk-stat-card bk-stat-total">
+              <span class="bk-stat-value" id="totalBookings">0</span>
+              <span class="bk-stat-label">Total</span>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="bk-stat-card bk-stat-approved">
+              <span class="bk-stat-value" id="approvedBookingsCount">0</span>
+              <span class="bk-stat-label">Approved</span>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="bk-stat-card bk-stat-pending">
+              <span class="bk-stat-value" id="pendingBookingsCount">0</span>
+              <span class="bk-stat-label">Pending</span>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="bk-stat-card bk-stat-rejected">
+              <span class="bk-stat-value" id="rejectedBookingsCount">0</span>
+              <span class="bk-stat-label">Rejected</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="bk-tabs-section">
+        <div class="bk-tabs-card">
+          <ul class="nav bk-tabs" id="bookingTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link active"
+                id="all-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#all"
+                type="button"
+                role="tab"
+              >
+                All
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                id="pending-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#pending"
+                type="button"
+                role="tab"
+              >
+                Pending <span class="bk-badge" id="pendingBadge">0</span>
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                id="approved-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#approved"
+                type="button"
+                role="tab"
+              >
+                Approved
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                id="rejected-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#rejected"
+                type="button"
+                role="tab"
+              >
+                Rejected
+              </button>
+            </li>
+          </ul>
+          <div class="tab-content bk-tab-content" id="bookingTabsContent">
+            <div class="tab-pane fade show active" id="all" role="tabpanel">
+              <div class="bk-table-wrap">
+                <table class="table bk-table" id="bookingsTable">
+                  <thead>
+                    <tr>
+                      <th>Booking ID</th>
+                      <th>Customer</th>
+                      <th>Car</th>
+                      <th>Period</th>
+                      <th>Duration</th>
+                      <th>Total</th>
+                      <th>Status</th>
+                      <th class="text-center">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="allBookingsBody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="pending" role="tabpanel">
+              <div class="bk-table-wrap">
+                <table class="table bk-table">
+                  <thead>
+                    <tr>
+                      <th>Booking ID</th>
+                      <th>Customer</th>
+                      <th>Car</th>
+                      <th>Period</th>
+                      <th>Total</th>
+                      <th class="text-end">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="pendingBookingsBody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="approved" role="tabpanel">
+              <div class="bk-table-wrap">
+                <table class="table bk-table">
+                  <thead>
+                    <tr>
+                      <th>Booking ID</th>
+                      <th>Customer</th>
+                      <th>Car</th>
+                      <th>Period</th>
+                      <th>Total</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="approvedBookingsBody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="rejected" role="tabpanel">
+              <div class="bk-table-wrap">
+                <table class="table bk-table">
+                  <thead>
+                    <tr>
+                      <th>Booking ID</th>
+                      <th>Customer</th>
+                      <th>Car</th>
+                      <th>Period</th>
+                      <th>Total</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rejectedBookingsBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/script.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        if (!currentUser || currentUser.role !== "admin") {
+          window.location.href = "../login.html";
+          return;
+        }
+        loadAllBookings();
+        updateStats();
+        var logoutBtn = document.querySelector(".logout-btn");
+        if (logoutBtn) {
+          logoutBtn.addEventListener("click", function () {
+            localStorage.removeItem("currentUser");
+            window.location.href = "../login.html";
+          });
+        }
+        document
+          .querySelectorAll("#bookingTabs button")
+          .forEach(function (tab) {
+            tab.addEventListener("click", function () {
+              if (this.id === "pending-tab") loadPendingBookings();
+              else if (this.id === "approved-tab") loadApprovedBookings();
+              else if (this.id === "rejected-tab") loadRejectedBookings();
+            });
+          });
+      });
+
+      function loadAllBookings() {
+        try {
+          var bookings = JSON.parse(localStorage.getItem("bookings") || "[]");
+          var cars = JSON.parse(localStorage.getItem("cars") || "[]");
+          var users = JSON.parse(localStorage.getItem("users") || "[]");
+          var tbody = document.getElementById("allBookingsBody");
+          tbody.innerHTML = "";
+          if (bookings.length === 0) {
+            tbody.innerHTML =
+              '<tr><td colspan="8" class="bk-empty-row"><i class="bi bi-calendar-x"></i><p>No bookings found.</p></td></tr>';
+            return;
+          }
+          bookings.sort(function (a, b) {
+            return (
+              new Date(b.createdAt || b.id) - new Date(a.createdAt || a.id)
+            );
+          });
+          bookings.forEach(function (booking) {
+            var car = cars.find(function (c) {
+              return c.id === booking.carId;
+            });
+            var user = users.find(function (u) {
+              return u.id === booking.userId;
+            });
+            var startDate = new Date(booking.startDate).toLocaleDateString();
+            var endDate = new Date(booking.endDate).toLocaleDateString();
+            var info = getStatusBadgeInfo(booking.status);
+            var actions = "";
+            if (booking.status === "pending") {
+              actions =
+                '<div class="bk-actions"><button class="btn btn-success btn-sm me-1" onclick="approveBooking(' +
+                booking.id +
+                ')"><i class="bi bi-check-circle"></i> Approve</button><button class="btn btn-danger btn-sm" onclick="rejectBooking(' +
+                booking.id +
+                ')"><i class="bi bi-x-circle"></i> Reject</button></div>';
+            } else if (booking.status === "approved") {
+              actions =
+                '<div class="bk-actions"><button class="btn btn-info btn-sm me-1" onclick="viewBookingDetails(' +
+                booking.id +
+                ')"><i class="bi bi-eye"></i> View</button><button class="btn btn-warning btn-sm" onclick="cancelBookingAsAdmin(' +
+                booking.id +
+                ')"><i class="bi bi-x-circle"></i> Cancel</button></div>';
+            } else {
+              actions =
+                '<button class="btn btn-outline-secondary btn-sm" onclick="viewBookingDetails(' +
+                booking.id +
+                ')"><i class="bi bi-eye"></i> View</button>';
+            }
+            var row =
+              "<tr><td><strong>#" +
+              String(booking.id).slice(-6) +
+              '</strong><br><small class="text-muted">' +
+              new Date(booking.createdAt).toLocaleDateString() +
+              "</small></td><td><strong>" +
+              (user ? user.name : "Unknown") +
+              '</strong><br><small class="text-muted">' +
+              (user ? user.email : "N/A") +
+              "</small></td><td><strong>" +
+              (car ? car.name : "Unknown Car") +
+              '</strong><br><small class="text-muted">' +
+              (car ? car.model + " • " + car.type : "N/A") +
+              "</small></td><td>" +
+              startDate +
+              ' <br><small class="text-muted">to ' +
+              endDate +
+              "</small></td><td>" +
+              (booking.duration || "N/A") +
+              '</td><td><strong class="text-primary">$' +
+              (booking.totalPrice != null
+                ? booking.totalPrice.toFixed(2)
+                : "0.00") +
+              '</strong></td><td><span class="badge ' +
+              info.badgeClass +
+              '">' +
+              info.badge +
+              "</span></td><td>" +
+              actions +
+              "</td></tr>";
+            tbody.insertAdjacentHTML("beforeend", row);
+          });
+        } catch (e) {
+          console.error("Error loading all bookings:", e);
+          showAlert("Error loading bookings. Please try again.", "danger");
+        }
+      }
+
+      function loadPendingBookings() {
+        try {
+          var bookings = JSON.parse(
+            localStorage.getItem("bookings") || "[]"
+          ).filter(function (b) {
+            return b.status === "pending";
+          });
+          var cars = JSON.parse(localStorage.getItem("cars") || "[]");
+          var users = JSON.parse(localStorage.getItem("users") || "[]");
+          var tbody = document.getElementById("pendingBookingsBody");
+          tbody.innerHTML = "";
+          if (bookings.length === 0) {
+            tbody.innerHTML =
+              '<tr><td colspan="6" class="bk-empty-row"><i class="bi bi-check-all"></i><p>No pending booking requests.</p></td></tr>';
+            return;
+          }
+          bookings.forEach(function (booking) {
+            var car = cars.find(function (c) {
+              return c.id === booking.carId;
+            });
+            var user = users.find(function (u) {
+              return u.id === booking.userId;
+            });
+            var startDate = new Date(booking.startDate).toLocaleDateString();
+            var endDate = new Date(booking.endDate).toLocaleDateString();
+            var row =
+              "<tr><td><strong>#" +
+              String(booking.id).slice(-6) +
+              "</strong></td><td><strong>" +
+              (user ? user.name : "Unknown") +
+              '</strong><br><small class="text-muted">' +
+              (user ? user.email : "N/A") +
+              "</small></td><td><strong>" +
+              (car ? car.name : "Unknown Car") +
+              '</strong><br><small class="text-muted">' +
+              (car ? car.model : "N/A") +
+              "</small></td><td>" +
+              startDate +
+              " to " +
+              endDate +
+              '</td><td><strong class="text-primary">$' +
+              (booking.totalPrice != null
+                ? booking.totalPrice.toFixed(2)
+                : "0.00") +
+              '</strong></td><td><div class="bk-actions"><button class="btn btn-success btn-sm me-1" onclick="approveBooking(' +
+              booking.id +
+              ')"><i class="bi bi-check-circle"></i> Approve</button><button class="btn btn-danger btn-sm" onclick="rejectBooking(' +
+              booking.id +
+              ')"><i class="bi bi-x-circle"></i> Reject</button><button class="btn btn-info btn-sm mt-1" onclick="viewBookingDetails(' +
+              booking.id +
+              ')"><i class="bi bi-eye"></i> Details</button></div></td></tr>';
+            tbody.insertAdjacentHTML("beforeend", row);
+          });
+        } catch (e) {
+          console.error("Error loading pending bookings:", e);
+          showAlert("Error loading pending bookings.", "danger");
+        }
+      }
+
+      function loadApprovedBookings() {
+        try {
+          var bookings = JSON.parse(
+            localStorage.getItem("bookings") || "[]"
+          ).filter(function (b) {
+            return b.status === "approved";
+          });
+          var cars = JSON.parse(localStorage.getItem("cars") || "[]");
+          var users = JSON.parse(localStorage.getItem("users") || "[]");
+          var tbody = document.getElementById("approvedBookingsBody");
+          tbody.innerHTML = "";
+          bookings.forEach(function (booking) {
+            var car = cars.find(function (c) {
+              return c.id === booking.carId;
+            });
+            var user = users.find(function (u) {
+              return u.id === booking.userId;
+            });
+            var startDate = new Date(booking.startDate).toLocaleDateString();
+            var endDate = new Date(booking.endDate).toLocaleDateString();
+            var info = getStatusBadgeInfo(booking.status);
+            var row =
+              "<tr><td><strong>#" +
+              String(booking.id).slice(-6) +
+              "</strong></td><td>" +
+              (user ? user.name : "Unknown") +
+              "</td><td>" +
+              (car ? car.name : "Unknown Car") +
+              "</td><td>" +
+              startDate +
+              " to " +
+              endDate +
+              "</td><td>$" +
+              (booking.totalPrice != null
+                ? booking.totalPrice.toFixed(2)
+                : "0.00") +
+              '</td><td><span class="badge ' +
+              info.badgeClass +
+              '">' +
+              info.badge +
+              "</span></td></tr>";
+            tbody.insertAdjacentHTML("beforeend", row);
+          });
+        } catch (e) {
+          console.error("Error loading approved bookings:", e);
+        }
+      }
+
+      function loadRejectedBookings() {
+        try {
+          var bookings = JSON.parse(
+            localStorage.getItem("bookings") || "[]"
+          ).filter(function (b) {
+            return b.status === "rejected";
+          });
+          var cars = JSON.parse(localStorage.getItem("cars") || "[]");
+          var users = JSON.parse(localStorage.getItem("users") || "[]");
+          var tbody = document.getElementById("rejectedBookingsBody");
+          tbody.innerHTML = "";
+          bookings.forEach(function (booking) {
+            var car = cars.find(function (c) {
+              return c.id === booking.carId;
+            });
+            var user = users.find(function (u) {
+              return u.id === booking.userId;
+            });
+            var startDate = new Date(booking.startDate).toLocaleDateString();
+            var endDate = new Date(booking.endDate).toLocaleDateString();
+            var info = getStatusBadgeInfo(booking.status);
+            var row =
+              "<tr><td><strong>#" +
+              String(booking.id).slice(-6) +
+              "</strong></td><td>" +
+              (user ? user.name : "Unknown") +
+              "</td><td>" +
+              (car ? car.name : "Unknown Car") +
+              "</td><td>" +
+              startDate +
+              " to " +
+              endDate +
+              "</td><td>$" +
+              (booking.totalPrice != null
+                ? booking.totalPrice.toFixed(2)
+                : "0.00") +
+              '</td><td><span class="badge ' +
+              info.badgeClass +
+              '">' +
+              info.badge +
+              "</span></td></tr>";
+            tbody.insertAdjacentHTML("beforeend", row);
+          });
+        } catch (e) {
+          console.error("Error loading rejected bookings:", e);
+        }
+      }
+
+      function updateStats() {
+        try {
+          var bookings = JSON.parse(localStorage.getItem("bookings") || "[]");
+          document.getElementById("totalBookings").textContent =
+            bookings.length;
+          document.getElementById("approvedBookingsCount").textContent =
+            bookings.filter(function (b) {
+              return b.status === "approved";
+            }).length;
+          document.getElementById("pendingBookingsCount").textContent =
+            bookings.filter(function (b) {
+              return b.status === "pending";
+            }).length;
+          document.getElementById("rejectedBookingsCount").textContent =
+            bookings.filter(function (b) {
+              return b.status === "rejected";
+            }).length;
+          document.getElementById("pendingBadge").textContent = bookings.filter(
+            function (b) {
+              return b.status === "pending";
+            }
+          ).length;
+        } catch (e) {
+          console.error("Error updating stats:", e);
+        }
+      }
+
+      function getStatusBadgeInfo(status) {
+        var badge = status
+          ? status.charAt(0).toUpperCase() + status.slice(1)
+          : "";
+        var badgeClass = "badge-pending";
+        if (status === "approved") badgeClass = "badge-approved";
+        else if (status === "rejected") badgeClass = "badge-rejected";
+        else if (status === "cancelled") badgeClass = "badge-cancelled";
+        else if (status !== "pending") badgeClass = "badge-secondary";
+        return { badge: badge, badgeClass: badgeClass };
+      }
+
+      function approveBooking(bookingId) {
+        if (!confirm("Are you sure you want to approve this booking?")) return;
+        try {
+          var bookings = JSON.parse(localStorage.getItem("bookings") || "[]");
+          var cars = JSON.parse(localStorage.getItem("cars") || "[]");
+          var i = bookings.findIndex(function (b) {
+            return b.id === bookingId;
+          });
+          if (i === -1) return;
+          bookings[i].status = "approved";
+          localStorage.setItem("bookings", JSON.stringify(bookings));
+          var carId = bookings[i].carId;
+          var ci = cars.findIndex(function (c) {
+            return c.id === carId;
+          });
+          if (ci !== -1) {
+            cars[ci].status = "rented";
+            localStorage.setItem("cars", JSON.stringify(cars));
+          }
+          showAlert("Booking approved successfully!", "success");
+          setTimeout(function () {
+            loadAllBookings();
+            loadPendingBookings();
+            loadApprovedBookings();
+            updateStats();
+          }, 500);
+        } catch (e) {
+          console.error("Error approving booking:", e);
+          showAlert("Error approving booking. Please try again.", "danger");
+        }
+      }
+
+      function rejectBooking(bookingId) {
+        if (!confirm("Are you sure you want to reject this booking?")) return;
+        try {
+          var bookings = JSON.parse(localStorage.getItem("bookings") || "[]");
+          var i = bookings.findIndex(function (b) {
+            return b.id === bookingId;
+          });
+          if (i === -1) return;
+          bookings[i].status = "rejected";
+          localStorage.setItem("bookings", JSON.stringify(bookings));
+          showAlert("Booking rejected!", "success");
+          setTimeout(function () {
+            loadAllBookings();
+            loadPendingBookings();
+            loadRejectedBookings();
+            updateStats();
+          }, 500);
+        } catch (e) {
+          console.error("Error rejecting booking:", e);
+          showAlert("Error rejecting booking. Please try again.", "danger");
+        }
+      }
+
+      function cancelBookingAsAdmin(bookingId) {
+        if (!confirm("Are you sure you want to cancel this approved booking?"))
+          return;
+        try {
+          var bookings = JSON.parse(localStorage.getItem("bookings") || "[]");
+          var cars = JSON.parse(localStorage.getItem("cars") || "[]");
+          var i = bookings.findIndex(function (b) {
+            return b.id === bookingId;
+          });
+          if (i === -1) return;
+          bookings[i].status = "cancelled";
+          localStorage.setItem("bookings", JSON.stringify(bookings));
+          var carId = bookings[i].carId;
+          var ci = cars.findIndex(function (c) {
+            return c.id === carId;
+          });
+          if (ci !== -1) {
+            cars[ci].status = "available";
+            localStorage.setItem("cars", JSON.stringify(cars));
+          }
+          showAlert("Booking cancelled successfully!", "success");
+          setTimeout(function () {
+            loadAllBookings();
+            loadApprovedBookings();
+            updateStats();
+          }, 500);
+        } catch (e) {
+          console.error("Error cancelling booking:", e);
+          showAlert("Error cancelling booking. Please try again.", "danger");
+        }
+      }
+
+      function viewBookingDetails(bookingId) {
+        var bookings = JSON.parse(localStorage.getItem("bookings") || "[]");
+        var cars = JSON.parse(localStorage.getItem("cars") || "[]");
+        var users = JSON.parse(localStorage.getItem("users") || "[]");
+        var booking = bookings.find(function (b) {
+          return b.id === bookingId;
+        });
+        if (!booking) {
+          showAlert("Booking details not found!", "danger");
+          return;
+        }
+        var car = cars.find(function (c) {
+          return c.id === booking.carId;
+        });
+        var user = users.find(function (u) {
+          return u.id === booking.userId;
+        });
+        var info = getStatusBadgeInfo(booking.status);
+        var modalHtml =
+          '<div class="modal fade" id="bookingDetailsModal" tabindex="-1"><div class="modal-dialog modal-lg modal-dialog-centered"><div class="modal-content bk-modal-content"><div class="modal-header"><h5 class="modal-title">Booking #' +
+          String(booking.id).slice(-6) +
+          '</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body">' +
+          '<div class="row g-3"><div class="col-md-6"><h6 class="bk-modal-h6">Customer</h6><p class="mb-0">' +
+          (user ? user.name : "Unknown") +
+          '<br><small class="text-muted">' +
+          (user ? user.email : "N/A") +
+          '</small></p></div><div class="col-md-6"><h6 class="bk-modal-h6">Status</h6><p class="mb-0"><span class="badge ' +
+          info.badgeClass +
+          '">' +
+          info.badge +
+          "</span></p></div>" +
+          '<div class="col-md-6"><h6 class="bk-modal-h6">Car</h6><p class="mb-0">' +
+          (car ? car.name + " (" + car.model + " • " + car.type + ")" : "N/A") +
+          '</p></div><div class="col-md-6"><h6 class="bk-modal-h6">Period</h6><p class="mb-0">' +
+          new Date(booking.startDate).toLocaleDateString() +
+          " – " +
+          new Date(booking.endDate).toLocaleDateString() +
+          '<br><small class="text-muted">' +
+          (booking.duration || "") +
+          "</small></p></div>" +
+          '<div class="col-12"><h6 class="bk-modal-h6">Total</h6><p class="mb-0 fw-bold text-primary">$' +
+          (booking.totalPrice != null
+            ? booking.totalPrice.toFixed(2)
+            : "0.00") +
+          "</p></div></div>" +
+          (booking.status === "pending"
+            ? '<div class="alert alert-info mt-3 mb-0">Approve or reject this booking below.</div>'
+            : "") +
+          '</div><div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>' +
+          (booking.status === "pending"
+            ? '<button type="button" class="btn btn-success" onclick="approveBooking(' +
+              booking.id +
+              ')"><i class="bi bi-check-circle me-1"></i>Approve</button><button type="button" class="btn btn-danger" onclick="rejectBooking(' +
+              booking.id +
+              ')"><i class="bi bi-x-circle me-1"></i>Reject</button>'
+            : "") +
+          '<button type="button" class="btn btn-primary"><i class="bi bi-printer me-1"></i>Print</button></div></div></div></div>';
+        document.body.insertAdjacentHTML("beforeend", modalHtml);
+        var modalEl = document.getElementById("bookingDetailsModal");
+        var modal = new bootstrap.Modal(modalEl);
+        modal.show();
+        modalEl.addEventListener("hidden.bs.modal", function () {
+          this.remove();
+        });
+      }
+
+      function showAlert(message, type) {
+        type = type || "info";
+        document.querySelectorAll(".alert-fixed").forEach(function (a) {
+          a.remove();
+        });
+        var el = document.createElement("div");
+        el.className =
+          "alert alert-" + type + " alert-fixed alert-dismissible fade show";
+        el.style.cssText =
+          "position:fixed;top:20px;right:20px;z-index:9999;min-width:300px;box-shadow:0 4px 12px rgba(0,0,0,0.3);";
+        el.innerHTML =
+          message +
+          '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+        document.body.appendChild(el);
+        setTimeout(function () {
+          if (el.parentNode) el.remove();
+        }, 5000);
+      }
+    </script>
+  </body>
+</html>

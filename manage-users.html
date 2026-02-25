@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Users - Admin - Rent-a-Car</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body class="manage-users-page">
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container">
+        <a class="navbar-brand" href="../../index.html">
+          <i class="bi bi-car-front-fill me-2"></i>
+          Rent-a-Car Admin
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="admin-dashboard.html">Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="manage-users.html"
+                >Manage Users</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="manage-cars.html">Manage Cars</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="bookings.html">Bookings</a>
+            </li>
+          </ul>
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <button type="button" class="btn btn-primary btn-sm logout-btn">
+                Logout
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <header class="mu-header">
+      <div class="mu-header-inner container">
+        <div class="mu-header-icon" aria-hidden="true">
+          <i class="bi bi-people-fill"></i>
+        </div>
+        <h1 class="mu-header-title">User management</h1>
+        <p class="mu-header-desc">Approve or reject user registrations</p>
+        <p class="mu-header-count" id="muUsersCount">0 users</p>
+      </div>
+    </header>
+
+    <main class="mu-main container">
+      <section class="mu-table-section">
+        <div class="mu-table-card">
+          <div class="mu-table-header">
+            <h2 class="mu-table-title">
+              <i class="bi bi-table me-2"></i>All users
+            </h2>
+          </div>
+          <div class="mu-table-wrap">
+            <table class="table mu-table" id="usersTable">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th class="text-start">Status</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Populated by script.js renderUsersTable() -->
+              </tbody>
+            </table>
+          </div>
+          <div class="mu-table-empty d-none" id="muTableEmpty">
+            <i class="bi bi-people"></i>
+            <p>No users in the system yet.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/script.js"></script>
+    <script>
+      (function () {
+        function updateCount() {
+          var users = JSON.parse(localStorage.getItem("users") || "[]");
+          var el = document.getElementById("muUsersCount");
+          if (el)
+            el.textContent =
+              users.length + " user" + (users.length === 1 ? "" : "s");
+          var emptyEl = document.getElementById("muTableEmpty");
+          var wrapEl = document.querySelector(".mu-table-wrap");
+          var tbody = document.querySelector("#usersTable tbody");
+          if (emptyEl && tbody) {
+            var hasRows = !!tbody.querySelector("tr");
+            if (hasRows) {
+              emptyEl.classList.add("d-none");
+              if (wrapEl) wrapEl.classList.remove("d-none");
+            } else {
+              emptyEl.classList.remove("d-none");
+              if (wrapEl) wrapEl.classList.add("d-none");
+            }
+          }
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+          updateCount();
+          var observer = new MutationObserver(updateCount);
+          var tbody = document.querySelector("#usersTable tbody");
+          if (tbody) observer.observe(tbody, { childList: true });
+        });
+      })();
+    </script>
+  </body>
+</html>
